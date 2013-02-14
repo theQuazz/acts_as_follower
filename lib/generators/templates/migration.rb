@@ -4,6 +4,7 @@ class ActsAsFollowerMigration < ActiveRecord::Migration
       t.references :followable, :polymorphic => true, :null => false
       t.references :follower,   :polymorphic => true, :null => false
       t.boolean :blocked, :default => false, :null => false
+      t.string :accepted, :default => 'pending', :null => false
       t.timestamps
     end
 

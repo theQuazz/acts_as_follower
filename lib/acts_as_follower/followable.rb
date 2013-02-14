@@ -24,7 +24,7 @@ module ActsAsFollower #:nodoc:
 
       # Returns the number of followers a record has.
       def followers_count
-        self.followings.unblocked.count
+        self.followings.unblocked.accepted.count
       end
 
       # Returns the followers by a given type
@@ -32,6 +32,7 @@ module ActsAsFollower #:nodoc:
         follows = follower_type.constantize.
           joins(:follows).
           where('follows.blocked'         => false,
+                'follows.accepted'        => 'yes',
                 'follows.followable_id'   => self.id,
                 'follows.followable_type' => parent_class_name(self.class),
                 'follows.follower_type'   => follower_type)
@@ -45,7 +46,7 @@ module ActsAsFollower #:nodoc:
       end
 
       def followers_by_type_count(follower_type)
-        self.followings.unblocked.for_follower_type(follower_type).count
+        self.followings.unblocked.accepted.for_follower_type(follower_type).count
       end
 
       # Allows magic names on followers_by_type
@@ -91,6 +92,18 @@ module ActsAsFollower #:nodoc:
 
       def get_follow_for(follower)
         self.followings.for_follower(follower).first
+      end
+
+      def accept_follower(follower)
+        get_follow_for(follower).accept!
+      end
+
+      def ignore_follower(follower)
+        get_follow_for(follower).ignore!
+      end
+
+      def decline_follower(follower)
+        get_follow_for(follower).decline!
       end
 
       private

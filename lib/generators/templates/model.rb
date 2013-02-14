@@ -11,4 +11,16 @@ class Follow < ActiveRecord::Base
     self.update_attribute(:blocked, true)
   end
 
+  def accept!
+    self.update_attribute(:accepted, 'yes')
+  end
+
+  def ignore!
+    self.update_attribute(:accepted, 'ignore')
+  end
+
+  def decline!
+    self.update_attribute(:accepted, 'no')
+  end
+
 end
