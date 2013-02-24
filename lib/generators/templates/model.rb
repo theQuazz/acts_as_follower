@@ -20,7 +20,7 @@ class Follow < ActiveRecord::Base
   end
 
   def decline!
-    self.update_attribute(:accepted, 'no')
+    self.destroy
   end
 
 end

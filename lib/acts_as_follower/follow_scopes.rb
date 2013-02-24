@@ -33,10 +33,6 @@ module ActsAsFollower #:nodoc:
       where(:blocked => true)
     end
 
-    def declined
-      where(:accepted => 'no')
-    end
-
     def accepted
       where(:accepted => 'yes')
     end

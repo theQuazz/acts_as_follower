@@ -69,17 +69,25 @@ module ActsAsFollower #:nodoc:
 
       # Returns the following records.
       def followers(options={})
-        self.followings.unblocked.includes(:follower).all(options).collect{|f| f.follower}
+        self.followings.accepted.unblocked.includes(:follower).all(options).collect{|f| f.follower}
       end
 
       def blocks(options={})
         self.followings.blocked.includes(:follower).all(options).collect{|f| f.follower}
       end
 
+      def ignored_followers(options={})
+        self.followings.ignored.includes(:follower).all(options).collect{|f| f.follower}
+      end
+
+      def pending_followers(options={})
+        self.followings.pending.includes(:follower).all(options).collect{|f| f.follower}
+      end
+
       # Returns true if the current instance is followed by the passed record
       # Returns false if the current instance is blocked by the passed record or no follow is found
       def followed_by?(follower)
-        self.followings.unblocked.for_follower(follower).exists?
+        self.followings.accepted.unblocked.for_follower(follower).exists?
       end
 
       def block(follower)
@@ -95,15 +103,23 @@ module ActsAsFollower #:nodoc:
       end
 
       def accept_follower(follower)
-        get_follow_for(follower).accept!
+        get_follow_for(follower).accept! if get_follow_for(follower)
       end
 
       def ignore_follower(follower)
-        get_follow_for(follower).ignore!
+        get_follow_for(follower).ignore! if get_follow_for(follower)
       end
 
       def decline_follower(follower)
-        get_follow_for(follower).decline!
+        get_follow_for(follower).decline! if get_follow_for(follower)
+      end
+
+      def is_ignoring_follows_from(follower)
+        self.followings.ignored.for_follower(follower).exists?
+      end
+
+      def has_pending_follow_request_from(follower)
+        self.followings.pending.for_follower(follower).exists?
       end
 
       private
